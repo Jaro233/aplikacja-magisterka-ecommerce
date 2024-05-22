@@ -16,15 +16,17 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "UP" });
 });
 
-sequelize
-  .sync()
-  .then(() => {
-    app.listen(5001, () => {
-      console.log("User service running on port 5001");
+if (process.env.NODE_ENV !== "test") {
+  sequelize
+    .sync()
+    .then(() => {
+      app.listen(5001, () => {
+        console.log("User service running on port 5001");
+      });
+    })
+    .catch((err) => {
+      console.error("Unable to connect to the database:", err);
     });
-  })
-  .catch((err) => {
-    console.error("Unable to connect to the database:", err);
-  });
+}
 
 module.exports = app;
