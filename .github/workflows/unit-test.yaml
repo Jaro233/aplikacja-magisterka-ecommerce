@@ -61,7 +61,7 @@ jobs:
       # - name: Install dependencies
       #   run: cd cart-service && npm install
       - name: Install dependencies
-        run: cd frontend && npm install
+        run: cd frontend && npm install && npm run build
 
       # - name: Run tests
       #   env:
