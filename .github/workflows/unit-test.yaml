@@ -101,7 +101,7 @@ jobs:
       #     REDIS_HOST: localhost
       #     REDIS_PORT: 6379
       #     REDIS_PASS: your_redis_password
-        run: cd cart-service && npm test
+      # run: cd cart-service && npm test
       - name: Run tests
         env:
           DB_NAME: test_ecommerce
