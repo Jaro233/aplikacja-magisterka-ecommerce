@@ -1,14 +1,14 @@
 const request = require("supertest");
-const app = require("../server");
+const { app, redisClient } = require("../server");
 
 describe("Order Microservice", () => {
   beforeAll((done) => {
     done();
   });
 
-  afterAll((done) => {
+  afterAll(async (done) => {
     // Closing the DB connection allows Jest to exit successfully.
-    redisClient.disconnect();
+    await redisClient.quit();
     done();
   });
   it("should return 200 for health check", async () => {
