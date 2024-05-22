@@ -1,9 +1,9 @@
 const request = require("supertest");
 const app = require("../server");
 
-describe("User Microservice", () => {
+describe("Order Microservice", () => {
   it("should return 500 for non-existent user", async () => {
-    const res = await request(app).get("/api/users/999");
+    const res = await request(app).get("/api/orders/999");
     expect(res.statusCode).toEqual(500);
   });
 
