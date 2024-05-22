@@ -1,0 +1,16 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql2": "^2.3.0",
+    "sequelize": "^6.6.5",
+    "dotenv": "^10.0.0",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.5",
+    "jsonwebtoken": "^8.5.1",
+    "axios": "1.7.1",
+    "redis": "4.6.14"
+  }
+}

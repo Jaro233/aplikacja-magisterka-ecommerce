@@ -1,0 +1,26 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "migrate": "sequelize db:migrate",
+    "seed": "sequelize db:seed:all",
+    "test": "npm run migrate && npm run seed && jest"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.0",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "redis-mock": "^0.56.3",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^7.0.0"
+  }
+}
