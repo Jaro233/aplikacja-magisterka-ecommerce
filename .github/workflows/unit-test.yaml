@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
           node-version: "14"
 
       - name: Install dependencies
-        run: npm install
+        run: cd user-service && npm install
 
       - name: Run tests
-        run: npm test
+        run: cd user-service && npm test
