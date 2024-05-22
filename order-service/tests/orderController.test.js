@@ -6,9 +6,9 @@ describe("Order Microservice", () => {
     done();
   });
 
-  afterAll(async (done) => {
+  afterAll((done) => {
     // Closing the DB connection allows Jest to exit successfully.
-    await redisClient.quit();
+    redisClient.quit();
     done();
   });
   it("should return 200 for health check", async () => {
