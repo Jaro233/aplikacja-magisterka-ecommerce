@@ -26,6 +26,8 @@ jobs:
 
       redis:
         image: redis:latest
+        env:
+          REDIS_PASSWORD: your_redis_password
         ports:
           - 6379:6379
         options: >-

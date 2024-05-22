@@ -17,17 +17,8 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "UP" });
 });
 
-if (process.env.NODE_ENV !== "test") {
-  sequelize
-    .sync()
-    .then(() => {
-      app.listen(5003, () => {
-        console.log("User service running on port 5003");
-      });
-    })
-    .catch((err) => {
-      console.error("Unable to connect to the database:", err);
-    });
-}
+app.listen(5003, () => {
+  console.log("Order service running on port 5003");
+});
 
-module.exports = app;
+module.exports = app; // Export for testing

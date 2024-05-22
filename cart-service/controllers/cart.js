@@ -14,6 +14,7 @@ exports.getCart = (req, res) => {
 
     const productIds = Object.keys(cart);
     const cartItems = [];
+    let totalCost = 0;
 
     for (let productId of productIds) {
       try {
@@ -21,13 +22,17 @@ exports.getCart = (req, res) => {
           `${process.env.PRODUCT_SERVICE_URL}/api/products/${productId}`
         );
         const product = response.data;
+        const quantity = parseInt(cart[productId], 10);
+        const itemTotal = product.price * quantity;
+        totalCost += itemTotal;
         cartItems.push({
           id: product.id,
           name: product.name,
           description: product.description,
           imageUrl: product.imageUrl,
           price: product.price,
-          quantity: cart[productId],
+          quantity: quantity,
+          itemTotal: itemTotal,
         });
       } catch (error) {
         console.error("Error fetching product details:", error);
@@ -37,7 +42,7 @@ exports.getCart = (req, res) => {
       }
     }
 
-    res.json(cartItems);
+    res.json({ cartItems, totalCost });
   });
 };
 

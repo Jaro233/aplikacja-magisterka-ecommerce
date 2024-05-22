@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 const Cart = () => {
   const classes = useStyles();
   const [cartItems, setCartItems] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
   const history = useHistory();
 
   const fetchCartItems = async () => {
@@ -50,7 +51,8 @@ const Cart = () => {
         `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart`,
         { withCredentials: true }
       );
-      setCartItems(response.data || []);
+      setCartItems(response.data.cartItems || []);
+      setTotalCost(response.data.totalCost || 0);
     } catch (error) {
       toast.error("Error fetching cart items");
     }
@@ -124,47 +126,52 @@ const Cart = () => {
       {cartItems.length === 0 ? (
         <Typography variant="h6">Your cart is empty</Typography>
       ) : (
-        cartItems.map((item) => (
-          <div key={item.id} className={classes.productContainer}>
-            <img
-              src={item.imageUrl}
-              alt={item.name}
-              className={classes.productImage}
-            />
-            <div className={classes.productDetails}>
-              <Typography variant="h6">{item.name}</Typography>
-              <Typography variant="body1">{item.description}</Typography>
-              <TextField
-                type="number"
-                value={item.quantity}
-                onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                className={classes.quantityField}
-                inputProps={{ min: 1 }}
+        <>
+          {cartItems.map((item) => (
+            <div key={item.id} className={classes.productContainer}>
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className={classes.productImage}
               />
-              <Typography variant="body2">
-                Price: ${item.price * item.quantity}
-              </Typography>
+              <div className={classes.productDetails}>
+                <Typography variant="h6">{item.name}</Typography>
+                <Typography variant="body1">{item.description}</Typography>
+                <TextField
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) =>
+                    handleQuantityChange(item.id, e.target.value)
+                  }
+                  className={classes.quantityField}
+                  inputProps={{ min: 1 }}
+                />
+                <Typography variant="body2">
+                  Price: ${item.price} x {item.quantity} = ${item.itemTotal}
+                </Typography>
+              </div>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleRemove(item.id)}
+                className={classes.removeButton}
+              >
+                REMOVE
+              </Button>
             </div>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => handleRemove(item.id)}
-              className={classes.removeButton}
-            >
-              REMOVE
-            </Button>
-          </div>
-        ))
-      )}
-      {cartItems.length > 0 && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handlePlaceOrder}
-          className={classes.orderButton}
-        >
-          PLACE ORDER
-        </Button>
+          ))}
+          <Typography variant="h5" gutterBottom>
+            Total Cost: ${totalCost}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePlaceOrder}
+            className={classes.orderButton}
+          >
+            PLACE ORDER
+          </Button>
+        </>
       )}
       <Button
         variant="contained"
