@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "migrate": "./node_modules/.bin/sequelize db:migrate",
-    "seed": "./node_modules/.bin/sequelize db:seed:all",
-    "test": "npm run migrate && npm run seed && jest"
+    "test": "jest"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,7 +18,6 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "redis-mock": "^0.56.3",
-    "sequelize-cli": "^6.6.2",
     "sequelize-mock": "^0.10.2",
     "supertest": "^7.0.0"
   }

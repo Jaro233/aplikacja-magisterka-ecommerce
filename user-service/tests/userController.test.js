@@ -1,14 +1,13 @@
 const request = require("supertest");
-const app = require("../app");
-const sequelize = require("../config/database");
-const { User } = require("../models");
+const app = require("../server");
+const { sequelize, User } = require("../models/user");
 
 describe("User Microservice", () => {
   beforeAll(async () => {
     await sequelize.sync({ force: true });
     await User.create({
       username: "testuser",
-      password: "hashedpassword",
+      password: "testpassword",
       email: "testuser@example.com",
     });
   });
@@ -27,5 +26,11 @@ describe("User Microservice", () => {
     const res = await request(app).get("/api/users/999");
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("error", "User not found");
+  });
+
+  it("should return 200 for health check", async () => {
+    const res = await request(app).get("/health");
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("status", "UP");
   });
 });
