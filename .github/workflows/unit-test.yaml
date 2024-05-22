@@ -85,6 +85,8 @@ jobs:
           DB_PASS: password
           DB_HOST: localhost
           NODE_ENV: test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
         run: cd order-service && npm test
       - name: Run tests
         env:
@@ -93,6 +95,8 @@ jobs:
           DB_PASS: password
           DB_HOST: localhost
           NODE_ENV: test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
         run: cd cart-service && npm test
       - name: Run tests
         env:
