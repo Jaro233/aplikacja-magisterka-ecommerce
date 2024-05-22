@@ -50,50 +50,50 @@ jobs:
         with:
           node-version: "14"
 
-      # - name: Install dependencies
-      #   run: cd user-service && npm install
-      # - name: Install dependencies
-      #   run: cd product-service && npm install
-      # - name: Install dependencies
-      #   run: cd order-service && npm install
-      # - name: Install dependencies
-      #   run: cd cart-service && npm install
+      - name: Install dependencies
+        run: cd user-service && npm install
+      - name: Install dependencies
+        run: cd product-service && npm install
+      - name: Install dependencies
+        run: cd order-service && npm install
+      - name: Install dependencies
+        run: cd cart-service && npm install
       - name: Install dependencies
         run: cd frontend && npm install
 
-      # - name: Run tests
-      #   env:
-      #     DB_NAME: test_ecommerce
-      #     DB_USER: root
-      #     DB_PASS: password
-      #     DB_HOST: localhost
-      #     NODE_ENV: test
-      #   run: cd user-service && npm test
+      - name: Run tests
+        env:
+          DB_NAME: test_ecommerce
+          DB_USER: root
+          DB_PASS: password
+          DB_HOST: localhost
+          NODE_ENV: test
+        run: cd user-service && npm test
 
-      # - name: Run tests
-      #   env:
-      #     DB_NAME: test_ecommerce
-      #     DB_USER: root
-      #     DB_PASS: password
-      #     DB_HOST: localhost
-      #     NODE_ENV: test
-      #   run: cd product-service && npm test
-      # - name: Run tests
-      #   env:
-      #     DB_NAME: test_ecommerce
-      #     DB_USER: root
-      #     DB_PASS: password
-      #     DB_HOST: localhost
-      #     NODE_ENV: test
-      #   run: cd order-service && npm test
-      # - name: Run tests
-      #   env:
-      #     DB_NAME: test_ecommerce
-      #     DB_USER: root
-      #     DB_PASS: password
-      #     DB_HOST: localhost
-      #     NODE_ENV: test
-      #   run: cd cart-service && npm test
+      - name: Run tests
+        env:
+          DB_NAME: test_ecommerce
+          DB_USER: root
+          DB_PASS: password
+          DB_HOST: localhost
+          NODE_ENV: test
+        run: cd product-service && npm test
+      - name: Run tests
+        env:
+          DB_NAME: test_ecommerce
+          DB_USER: root
+          DB_PASS: password
+          DB_HOST: localhost
+          NODE_ENV: test
+        run: cd order-service && npm test
+      - name: Run tests
+        env:
+          DB_NAME: test_ecommerce
+          DB_USER: root
+          DB_PASS: password
+          DB_HOST: localhost
+          NODE_ENV: test
+        run: cd cart-service && npm test
       - name: Run tests
         env:
           DB_NAME: test_ecommerce
