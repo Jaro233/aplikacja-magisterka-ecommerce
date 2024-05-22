@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { sequelize } = require("./models");
+const sequelize = require("./config/database");
 const userRoutes = require("./routes/user");
 require("dotenv").config();
 
@@ -16,17 +16,13 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "UP" });
 });
 
-if (process.env.NODE_ENV !== "test") {
-  sequelize
-    .sync()
-    .then(() => {
-      app.listen(5001, () => {
-        console.log("User service running on port 5001");
-      });
-    })
-    .catch((err) => {
-      console.error("Unable to connect to the database:", err);
+sequelize
+  .sync()
+  .then(() => {
+    app.listen(5001, () => {
+      console.log("User service running on port 5001");
     });
-}
-
-module.exports = app;
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
