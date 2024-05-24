@@ -62,6 +62,7 @@ const Login = ({ checkAuth }) => {
           fullWidth
           label="Username"
           name="username"
+          id="username" // Ensure this matches the label's htmlFor
           autoFocus
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -74,6 +75,7 @@ const Login = ({ checkAuth }) => {
           name="password"
           label="Password"
           type="password"
+          id="password" // Ensure this matches the label's htmlFor
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
