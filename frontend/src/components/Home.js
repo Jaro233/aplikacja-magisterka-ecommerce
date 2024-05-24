@@ -23,7 +23,7 @@ const Home = () => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={3}>
+      <Grid container>
         {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
             <Product product={product} />

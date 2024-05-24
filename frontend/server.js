@@ -16,8 +16,11 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`Frontend health check server listening on port ${port}`);
-});
+// Only start the server if this script is run directly (not imported as a module)
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Frontend health check server listening on port ${port}`);
+  });
+}
 
 module.exports = app;
