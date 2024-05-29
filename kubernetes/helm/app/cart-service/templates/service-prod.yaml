@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.microservice.name }}-prod
+  namespace: {{.Values.microservice.namespace}}
+spec:
+  type: {{.Values.microservice.service.type}}
+  ports:
+    - port: {{.Values.microservice.service.port}}
+      targetPort: {{.Values.microservice.containerPort}}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{.Values.microservice.name}}
+    slot: {{ .Values.productionSlot }}
+

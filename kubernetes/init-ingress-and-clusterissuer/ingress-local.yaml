@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  namespace: e-commerce
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "local-ecommerce-prod.devopshub.org"
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: frontend-prod
+                port:
+                  number: 8080 # use appropriate port
+    - host: "local-ecommerce-stage.devopshub.org"
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: frontend-stage
+                port:
+                  number: 8080 # use appropriate port
+  tls:
+    - hosts:
+        - "local-ecommerce-prod.devopshub.org"
+        - "local-ecommerce-stage.devopshub.org"
+      secretName: e-commerce

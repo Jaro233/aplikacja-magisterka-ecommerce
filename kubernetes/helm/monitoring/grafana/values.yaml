@@ -1,0 +1,118 @@
+envFromSecrets:
+  - name: slack-webhook-url
+
+admin:
+  ## Name of the secret. Can be templated.
+  existingSecret: "grafana-secret"
+  userKey: username
+  passwordKey: password
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus-uid
+        access: proxy
+        orgId: 1
+        url: http://prometheus-server.monitoring.svc.cluster.local:80
+        isDefault: true
+        editable: true
+        jsonData:
+          alerting: true
+          timeInterval: "5s"
+
+alerting:
+  rules.yaml:
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: evaluation_standard
+        folder: alerts
+        interval: 1m
+        rules:
+          - uid: ddjqjcvlz0nwgf
+            title: high-memory
+            condition: C
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: prometheus-uid
+                model:
+                  editorMode: code
+                  expr: (1 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"})) * 100
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+              - refId: C
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 8
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+            noDataState: Alerting
+            execErrState: Alerting
+            for: 1m
+            annotations: {}
+            labels: {}
+            isPaused: false
+
+  contactpoints.yaml:
+    apiVersion: 1
+    contactPoints:
+      - orgId: 1
+        name: slack-endpoint
+        receivers:
+          - uid: adjqlgoxn1p1de
+            type: slack
+            settings:
+              url: "${SLACKWEBHOOK}"
+              recipient: "#prometheus-grafana" # Your Slack channel
+            disableResolveMessage: false
+
+  policies.yaml:
+    apiVersion: 1
+    policies:
+      - orgId: 1
+        receiver: slack-endpoint
+        group_by:
+          - grafana_folder
+          - alertname
+
+namespaceOverride: "monitoring"

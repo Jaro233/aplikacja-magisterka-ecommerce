@@ -1,0 +1,47 @@
+productionSlot: blue
+
+env_vars:
+  DB_HOST_BLUE: mysql-prod.prod-db
+  DB_HOST_GREEN: mysql-stage.stage-db
+  DB_USER:
+    secret: db-secret
+    key: user
+  DB_PASS:
+    secret: db-secret
+    key: password
+  DB_NAME:
+    secret: db-secret
+    key: dbName
+  JWT_SECRET:
+    secret: jwt-secret
+    key: secret
+
+microservice:
+  name: user-service
+  namespace: e-commerce
+  replicaCount: 2
+  current_environment_blue: prod
+  current_environment_green: stage
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "128Mi"
+      cpu: "500m"
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+  image:
+    repository_blue: j4ro123/e-commerce-user-service
+    repository_green: j4ro123/e-commerce-user-service
+    tag_blue: latest
+    tag_green: latest
+  containerPort: 5001
+  service:
+    type: ClusterIP
+    port: 5001

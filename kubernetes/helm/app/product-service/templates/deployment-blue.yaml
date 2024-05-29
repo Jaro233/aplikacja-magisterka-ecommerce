@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.microservice.name}}-blue
+  labels:
+    app: {{.Values.microservice.name}}
+  namespace: {{.Values.microservice.namespace}}
+spec:
+  replicas: {{.Values.microservice.replicaCount}}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0%
+  selector:
+    matchLabels:
+      app: {{.Values.microservice.name}}
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: {{.Values.microservice.name}}
+        slot: blue
+        env: {{.Values.microservice.current_environment_blue}}
+    spec:
+      containers:
+        - name: {{.Values.microservice.name}}
+          image: "{{ .Values.microservice.image.repository_blue }}:{{ .Values.microservice.image.tag_blue }}"
+          resources:
+            limits:
+              cpu: {{.Values.microservice.resources.limits.cpu}}
+              memory: {{.Values.microservice.resources.limits.memory}}
+            requests:
+              cpu: {{.Values.microservice.resources.requests.cpu}}
+              memory: {{.Values.microservice.resources.requests.memory}}
+          ports:
+            - containerPort: {{.Values.microservice.containerPort}}
+          env:
+            - name: DB_HOST
+              value: {{.Values.env_vars.DB_HOST_BLUE}}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.env_vars.DB_USER.secret}}
+                  key: {{.Values.env_vars.DB_USER.key}}
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.env_vars.DB_PASS.secret}}
+                  key: {{.Values.env_vars.DB_PASS.key}}
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.env_vars.DB_NAME.secret}}
+                  key: {{.Values.env_vars.DB_NAME.key}}
+            
+          {{- if .Values.microservice.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.microservice.containerPort }}
+            initialDelaySeconds: {{ .Values.microservice.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.microservice.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.microservice.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.microservice.containerPort }}
+            initialDelaySeconds: {{ .Values.microservice.readinessProbe.initialDelaySeconds }}
+          {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]

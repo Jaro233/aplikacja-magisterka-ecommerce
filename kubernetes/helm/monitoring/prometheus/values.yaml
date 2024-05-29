@@ -1,0 +1,73 @@
+serverFiles:
+  prometheus.yml:
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets: ["localhost:9090"]
+
+      # Scrape configuration for Node Exporter
+      - job_name: "node-exporter"
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: http
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: prometheus-prometheus-node-exporter
+          - source_labels: [__meta_kubernetes_pod_container_port_number]
+            action: keep
+            regex: "9100"
+
+      # Scrape configuration for kube-state-metrics
+      - job_name: "kube-state-metrics"
+        scheme: http
+        static_configs:
+          - targets:
+              [
+                "prometheus-kube-state-metrics.monitoring.svc.cluster.local:8080",
+              ]
+
+      - job_name: "kubernetes-kubelet"
+        scheme: https # Change to 'http' if your kubelet is not running with HTTPS
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          # Depending on your cluster setup, you may need to set `insecure_skip_verify` to true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443 # Assuming the kubelet is accessible via the Kubernetes API server
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+
+      - job_name: "kubernetes-cadvisor"
+        scheme: https # Change to 'http' if cAdvisor is not running with HTTPS
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          # Depending on your cluster setup, you may need to set `insecure_skip_verify` to true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443 # Assuming cAdvisor is accessible via the Kubernetes API server
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+# Custom values for prometheus-community Helm chart
+prometheus-node-exporter:
+  enabled: true
+  extraArgs:
+    - --collector.systemd
+    - --collector.processes
+
+forceNamespace: "monitoring"
