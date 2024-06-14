@@ -4,13 +4,11 @@ services:
   user-service:
     build: ./user-service
     environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASS=password
-      - DB_NAME=ecommerce
+      - MONGO_URI=mongodb://root:password@mongodb:27017/ecommerce?authSource=admin
       - JWT_SECRET=your_secret_key
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - mysql
+      - mongodb
     ports:
       - "5001:5001"
     restart: always
@@ -39,6 +37,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASS=your_redis_password
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - PRODUCT_SERVICE_URL=http://product-service:5002
     depends_on:
       - mysql
@@ -53,11 +52,22 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASS=your_redis_password
       - JWT_SECRET=your_secret_key
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - PRODUCT_SERVICE_URL=http://product-service:5002
     depends_on:
       - redis
     ports:
       - "5004:5004"
+    restart: always
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    ports:
+      - "5005:5005"
     restart: always
 
   frontend:
@@ -74,6 +84,16 @@ services:
       - REACT_APP_PRODUCT_SERVICE_URL=http://localhost:5002
       - REACT_APP_ORDER_SERVICE_URL=http://localhost:5003
       - REACT_APP_CART_SERVICE_URL=http://localhost:5004
+      - REACT_APP_NOTIFICATION_SERVICE_URL=http://localhost:5005
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
 
   mysql:
     image: mysql:latest
@@ -83,13 +103,21 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./dumb.sql:/docker-entrypoint-initdb.d/dumb.sql
+      - ./mysql-redis-config/dumb.sql:/docker-entrypoint-initdb.d/dumb.sql
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
 
   redis:
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./mysql-redis-config/redis.conf:/usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
 

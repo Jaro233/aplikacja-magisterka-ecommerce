@@ -1,0 +1,40 @@
+env_vars:
+  REACT_APP_USER_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_USER_SERVICE_URL
+  REACT_APP_PRODUCT_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_PRODUCT_SERVICE_URL
+  REACT_APP_ORDER_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_ORDER_SERVICE_URL
+  REACT_APP_CART_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_CART_SERVICE_URL
+
+microservice:
+  name: frontend
+  namespace: e-commerce
+  replicaCount: 2
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "200Mi"
+      cpu: "100m"
+  prePromotionAnalysis: frontend-healthcheck-pre
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+  image:
+    repository: j4ro123/e-commerce-frontend
+    tag: latest
+  containerPort: 3000
+  service:
+    type: ClusterIP
+    port: 3000

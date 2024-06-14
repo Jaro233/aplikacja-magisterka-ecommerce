@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: product-service-blue-hpa
+  name: product-service-hpa
   namespace: e-commerce
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: product-service-blue
+    kind: Rollout
+    name: product-service
   minReplicas: 1
   maxReplicas: 3
   metrics:
@@ -23,55 +23,17 @@ spec:
         target:
           type: Utilization
           averageUtilization: 80
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: product-service-green-hpa
-  namespace: e-commerce
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: product-service-green
-  minReplicas: 1
-  maxReplicas: 3
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 80
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
+
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: product-service-green-vpa
+  name: product-service-vpa
   namespace: e-commerce
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: product-service-green
-  updatePolicy:
-    updateMode: "Initial"
----
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
-  name: product-service-blue-vpa
-  namespace: e-commerce
-spec:
-  targetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: product-service-blue
+    kind: Rollout
+    name: product-service
   updatePolicy:
     updateMode: "Initial"

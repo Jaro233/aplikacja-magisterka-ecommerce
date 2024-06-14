@@ -1,0 +1,19 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: IngressAndClusterissuer
+profiles:
+  - name: dev
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-ingress-and-clusterissuer/ingress-local.yaml"
+        - "./kubernetes/init-ingress-and-clusterissuer/clusterissuer.yaml"
+    deploy:
+      kubectl: {}
+  - name: prod
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-ingress-and-clusterissuer/ingress.yaml"
+        - "./kubernetes/init-ingress-and-clusterissuer/clusterissuer.yaml"
+    deploy:
+      kubectl: {}

@@ -1,0 +1,267 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: ClusterDeploy
+build:
+  tagPolicy:
+    customTemplate:
+      template: "latest"
+  local:
+    push: true
+  artifacts:
+    - image: j4ro123/e-commerce-cart-service
+      context: cart-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-frontend
+      context: frontend
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-order-service
+      context: order-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-product-service
+      context: product-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-user-service
+      context: user-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+profiles:
+  - name: dev
+    deploy:
+      helm:
+        releases:
+          - name: namespace
+            chartPath: ./kubernetes/helm/namespace
+            valuesFiles:
+              - ./kubernetes/helm/namespace/values.yaml
+          - name: role-and-configmap
+            chartPath: ./kubernetes/helm/role-and-configmap
+            valuesFiles:
+              - ./kubernetes/helm/role-and-configmap/values.yaml
+          - name: secrets
+            chartPath: ./kubernetes/helm/secrets
+            valuesFiles:
+              - ./kubernetes/helm/secrets/values.yaml
+          - name: mysql-prod
+            chartPath: ./kubernetes/helm/db/mysql
+            valuesFiles:
+              - ./kubernetes/helm/db/mysql/values-dev.yaml
+            namespace: prod-db
+          - name: redis-prod
+            remoteChart: bitnami/redis
+            valuesFiles:
+              - ./kubernetes/helm/db/redis/values-dev.yaml
+            namespace: prod-db
+          - name: argo-rollouts
+            remoteChart: argo/argo-rollouts
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/argo-rollouts/values-dev.yaml
+            namespace: e-commerce
+          - name: vertical-pod-autoscaler
+            remoteChart: fairwinds-stable/vpa
+            namespace: e-commerce
+          - name: ingress-nginx-controller
+            remoteChart: ingress-nginx/ingress-nginx
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/ingress-nginx/values-dev.yaml
+            namespace: ingress-nginx
+          - name: cert-manager
+            remoteChart: cert-manager/cert-manager
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/cert-manager/values.yaml
+            namespace: cert-manager
+          - name: product-service
+            chartPath: ./kubernetes/helm/app/product-service
+            valuesFiles:
+              - ./kubernetes/helm/app/product-service/values-dev.yaml
+            namespace: e-commerce
+          - name: cart-service
+            chartPath: ./kubernetes/helm/app/cart-service
+            valuesFiles:
+              - ./kubernetes/helm/app/cart-service/values-dev.yaml
+            namespace: e-commerce
+          - name: order-service
+            chartPath: ./kubernetes/helm/app/order-service
+            valuesFiles:
+              - ./kubernetes/helm/app/order-service/values-dev.yaml
+            namespace: e-commerce
+          - name: user-service
+            chartPath: ./kubernetes/helm/app/user-service
+            valuesFiles:
+              - ./kubernetes/helm/app/user-service/values-dev.yaml
+            namespace: e-commerce
+          - name: frontend
+            chartPath: ./kubernetes/helm/app/frontend
+            valuesFiles:
+              - ./kubernetes/helm/app/frontend/values-dev.yaml
+            namespace: e-commerce
+          - name: ingress-and-clusterissuer
+            chartPath: ./kubernetes/helm/ingress-and-clusterissuer
+            valuesFiles:
+              - ./kubernetes/helm/ingress-and-clusterissuer/values-dev.yaml
+          # - name: metrics-server
+          #   remoteChart: metrics-server/metrics-server
+          #   valuesFiles:
+          #     - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/metrics-server/values.yaml
+
+          # - name: elasticsearch
+          #   remoteChart: bitnami/elasticsearch
+          #   valuesFiles:
+          #     - ./kubernetes/helm/logging/elasticsearch/values-dev.yaml
+          #   namespace: logging
+          # - name: fluentbit
+          #   chartPath: ./kubernetes/helm/logging/fluentbit
+          #   valuesFiles:
+          #     - ./kubernetes/helm/logging/fluentbit/values-dev.yaml
+          #   namespace: logging
+          # - name: kibana
+          #   remoteChart: bitnami/kibana
+          #   valuesFiles:
+          #     - ./kubernetes/helm/logging/kibana/values-dev.yaml
+          #   namespace: logging
+          # - name: prometheus
+          #   remoteChart: prometheus-community/prometheus
+          #   valuesFiles:
+          #     - ./kubernetes/helm/monitoring/prometheus/values.yaml
+          #   namespace: monitoring
+          # - name: grafana
+          #   remoteChart: grafana/grafana
+          #   valuesFiles:
+          #     - ./kubernetes/helm/monitoring/grafana/values-dev.yaml
+          #   namespace: monitoring
+        # hooks:
+        #   after:
+        #     - host:
+        #         command:
+        #           - kubectl
+        #           - patch
+        #           - ds
+        #           - prometheus-prometheus-node-exporter
+        #           - --type
+        #           - json
+        #           - -p
+        #           - '[{"op": "remove", "path" : "/spec/template/spec/containers/0/volumeMounts/2/mountPropagation"}]'
+        #           - -n
+        #           - monitoring
+
+  - name: prod
+    deploy:
+      helm:
+        releases:
+          - name: namespace
+            chartPath: ./kubernetes/helm/namespace
+            valuesFiles:
+              - ./kubernetes/helm/namespace/values.yaml
+          - name: role-and-configmap
+            chartPath: ./kubernetes/helm/role-and-configmap
+            valuesFiles:
+              - ./kubernetes/helm/role-and-configmap/values.yaml
+          - name: secrets
+            chartPath: ./kubernetes/helm/secrets
+            valuesFiles:
+              - ./kubernetes/helm/secrets/values.yaml
+          - name: mysql-prod
+            chartPath: ./kubernetes/helm/db/mysql
+            valuesFiles:
+              - ./kubernetes/helm/db/mysql/values.yaml
+            namespace: prod-db
+          - name: redis-prod
+            remoteChart: bitnami/redis
+            valuesFiles:
+              - ./kubernetes/helm/db/redis/values.yaml
+            namespace: prod-db
+          - name: argo-rollouts
+            remoteChart: argo/argo-rollouts
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/argo-rollouts/values.yaml
+            namespace: e-commerce
+          - name: vertical-pod-autoscaler
+            remoteChart: fairwinds-stable/vpa
+            namespace: e-commerce
+          - name: product-service
+            chartPath: ./kubernetes/helm/app/product-service
+            valuesFiles:
+              - ./kubernetes/helm/app/product-service/values.yaml
+            namespace: e-commerce
+          - name: cart-service
+            chartPath: ./kubernetes/helm/app/cart-service
+            valuesFiles:
+              - ./kubernetes/helm/app/cart-service/values.yaml
+            namespace: e-commerce
+          - name: order-service
+            chartPath: ./kubernetes/helm/app/order-service
+            valuesFiles:
+              - ./kubernetes/helm/app/order-service/values.yaml
+            namespace: e-commerce
+          - name: user-service
+            chartPath: ./kubernetes/helm/app/user-service
+            valuesFiles:
+              - ./kubernetes/helm/app/user-service/values.yaml
+            namespace: e-commerce
+          - name: frontend
+            chartPath: ./kubernetes/helm/app/frontend
+            valuesFiles:
+              - ./kubernetes/helm/app/frontend/values.yaml
+            namespace: e-commerce
+          - name: cert-manager
+            remoteChart: cert-manager/cert-manager
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/cert-manager/values.yaml
+            namespace: cert-manager
+          - name: ingress-nginx-controller
+            remoteChart: ingress-nginx/ingress-nginx
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/ingress-nginx/values.yaml
+            namespace: ingress-nginx
+          - name: ingress-and-clusterissuer
+            chartPath: ./kubernetes/helm/ingress-and-clusterissuer
+            valuesFiles:
+              - ./kubernetes/helm/ingress-and-clusterissuer/values.yaml
+          - name: metrics-server
+            remoteChart: metrics-server/metrics-server
+            valuesFiles:
+              - ./kubernetes/helm/rollouts-certManager-ingressController-metrics/metrics-server/values.yaml
+          - name: elasticsearch
+            remoteChart: bitnami/elasticsearch
+            valuesFiles:
+              - ./kubernetes/helm/logging/elasticsearch/values.yaml
+            namespace: logging
+          - name: fluentbit
+            chartPath: ./kubernetes/helm/logging/fluentbit
+            valuesFiles:
+              - ./kubernetes/helm/logging/fluentbit/values.yaml
+            namespace: logging
+          - name: kibana
+            remoteChart: bitnami/kibana
+            valuesFiles:
+              - ./kubernetes/helm/logging/kibana/values.yaml
+            namespace: logging
+          - name: prometheus
+            remoteChart: prometheus-community/prometheus
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/prometheus/values.yaml
+            namespace: monitoring
+          - name: grafana
+            remoteChart: grafana/grafana
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/grafana/values.yaml
+            namespace: monitoring

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -9,6 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
+import { NotificationContext } from "../context/NotificationContext"; // Import NotificationContext
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -31,19 +32,21 @@ const Login = ({ checkAuth }) => {
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { sendNotification } = useContext(NotificationContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
-        `${process.env.REACT_APP_USER_SERVICE_URL}/api/users/login`,
+        `${window._env_.REACT_APP_USER_SERVICE_URL}/api/users/login`,
         { username, password },
         { withCredentials: true }
       );
-      toast.success("Logged in successfully!");
       checkAuth(); // Update authentication status
       history.push("/");
-      window.location.reload();
+      // window.location.reload();
+      // toast.success("Logged in successfully!");
+      // sendNotification("Logged in successfully!", "user"); // Send notification
     } catch (error) {
       toast.error("Login failed. Please try again.");
     }

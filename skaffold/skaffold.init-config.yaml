@@ -1,0 +1,21 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: InitConfig
+profiles:
+  - name: dev
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-namespace/*"
+        - "./kubernetes/init-role-and-configmap/*"
+        - "./kubernetes/init-secrets/*"
+    deploy:
+      kubectl: {}
+  - name: prod
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-namespace/*"
+        - "./kubernetes/init-role-and-configmap/*"
+        - "./kubernetes/init-secrets/*"
+    deploy:
+      kubectl: {}

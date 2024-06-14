@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, useHistory } from "react-router-dom";
 import { Container, Typography, Button, makeStyles } from "@material-ui/core";
 import { toast } from "react-toastify";
+import { NotificationContext } from "../context/NotificationContext"; // Import NotificationContext
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -43,10 +44,11 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const history = useHistory();
   const classes = useStyles();
+  const { sendNotification } = useContext(NotificationContext);
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_PRODUCT_SERVICE_URL}/api/products/${id}`)
+      .get(`${window._env_.REACT_APP_PRODUCT_SERVICE_URL}/api/products/${id}`)
       .then((response) => {
         setProduct(response.data);
         setLoading(false);
@@ -73,12 +75,13 @@ const ProductDetail = () => {
 
     axios
       .post(
-        `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart`,
+        `${window._env_.REACT_APP_CART_SERVICE_URL}/api/cart`,
         { productId: id },
         { withCredentials: true }
       )
       .then((response) => {
-        toast.success("Product added to cart");
+        // toast.success("Product added to cart");
+        // sendNotification("Product added to cart", "cart");
       })
       .catch((error) => toast.error("Error adding to cart"));
   };

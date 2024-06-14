@@ -1,6 +1,22 @@
 const Order = require("../models/order");
 const axios = require("axios");
 const redisClient = require("../config/redis");
+const amqp = require("amqplib");
+require("dotenv").config();
+
+const RABBITMQ_URL = process.env.RABBITMQ_URL;
+
+const publishToQueue = async (queue, message) => {
+  try {
+    const connection = await amqp.connect(RABBITMQ_URL);
+    const channel = await connection.createChannel();
+    await channel.assertQueue(queue, { durable: true });
+    channel.sendToQueue(queue, Buffer.from(message));
+    console.log(`Message sent to queue: ${queue}`);
+  } catch (error) {
+    console.error("Error in publishing message:", error);
+  }
+};
 
 exports.getOrders = async (req, res) => {
   try {
@@ -40,7 +56,6 @@ exports.createOrder = async (req, res) => {
     const { items } = req.body;
     let total = 0;
 
-    // Calculate the total price
     for (let item of items) {
       const response = await axios.get(
         `${process.env.PRODUCT_SERVICE_URL}/api/products/${item.productId}`
@@ -55,8 +70,9 @@ exports.createOrder = async (req, res) => {
       total,
     });
 
-    // Clear the cart
     await redisClient.del(req.user.id.toString());
+
+    await publishToQueue("orderQueue", JSON.stringify(order));
 
     res.status(201).json(order);
   } catch (error) {

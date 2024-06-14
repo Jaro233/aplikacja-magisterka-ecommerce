@@ -18,7 +18,35 @@ spec:
               service:
                 name: frontend-prod
                 port:
-                  number: 8080 # use appropriate port
+                  number: 3000 # use appropriate port
+          - pathType: Prefix
+            path: /api/users
+            backend:
+              service:
+                name: user-service-prod
+                port:
+                  number: 5001 # use appropriate port
+          - pathType: Prefix
+            path: /api/products
+            backend:
+              service:
+                name: product-service-prod
+                port:
+                  number: 5002 # use appropriate port
+          - pathType: Prefix
+            path: /api/orders
+            backend:
+              service:
+                name: order-service-prod
+                port:
+                  number: 5003 # use appropriate port
+          - pathType: Prefix
+            path: /api/cart
+            backend:
+              service:
+                name: cart-service-prod
+                port:
+                  number: 5004 # use appropriate port
     - host: "ecommerce-stage.devopshub.org"
       http:
         paths:
@@ -28,7 +56,35 @@ spec:
               service:
                 name: frontend-stage
                 port:
-                  number: 8080 # use appropriate port
+                  number: 3000 # use appropriate port
+          - pathType: Prefix
+            path: /api/users
+            backend:
+              service:
+                name: user-service-stage
+                port:
+                  number: 5001 # use appropriate port
+          - pathType: Prefix
+            path: /api/products
+            backend:
+              service:
+                name: product-service-stage
+                port:
+                  number: 5002 # use appropriate port
+          - pathType: Prefix
+            path: /api/orders
+            backend:
+              service:
+                name: order-service-stage
+                port:
+                  number: 5003 # use appropriate port
+          - pathType: Prefix
+            path: /api/cart
+            backend:
+              service:
+                name: cart-service-stage
+                port:
+                  number: 5004 # use appropriate port
   tls:
     - hosts:
         - "ecommerce.devopshub.org"

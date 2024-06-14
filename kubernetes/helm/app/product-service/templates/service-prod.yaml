@@ -12,5 +12,4 @@ spec:
       name: http
   selector:
     app: {{.Values.microservice.name}}
-    slot: {{ .Values.productionSlot }}
 

@@ -6,6 +6,16 @@
     <title>E-commerce App</title>
     <link rel="icon" href="%PUBLIC_URL%/ecommerce.ico" />
     <link rel="stylesheet" href="index.css" />
+    <script>
+      // variable to be replaced with env. variable
+      window._env_ = {
+        REACT_APP_USER_SERVICE_URL: "__USER_SERVICE__",
+        REACT_APP_PRODUCT_SERVICE_URL: "__PRODUCT_SERVICE__",
+        REACT_APP_ORDER_SERVICE_URL: "__ORDER_SERVICE__",
+        REACT_APP_CART_SERVICE_URL: "__CART_SERVICE__",
+        REACT_APP_NOTIFICATION_SERVICE_URL: "__NOTIFICATION_SERVICE__",
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>

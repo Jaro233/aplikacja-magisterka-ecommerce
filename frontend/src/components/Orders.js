@@ -36,8 +36,10 @@ const Orders = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ORDER_SERVICE_URL}/api/orders`,
-          { withCredentials: true }
+          `${window._env_.REACT_APP_ORDER_SERVICE_URL}/api/orders`,
+          {
+            withCredentials: true,
+          }
         );
         setOrders(response.data);
       } catch (error) {

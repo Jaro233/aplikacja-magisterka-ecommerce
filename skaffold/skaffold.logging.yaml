@@ -1,0 +1,43 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: LoggingDeploy
+profiles:
+  - name: dev
+    deploy:
+      helm:
+        releases:
+          - name: elasticsearch
+            remoteChart: bitnami/elasticsearch
+            valuesFiles:
+              - ./kubernetes/helm/logging/elasticsearch/values-dev.yaml
+            namespace: logging
+          - name: fluentbit
+            chartPath: ./kubernetes/helm/logging/fluentbit
+            valuesFiles:
+              - ./kubernetes/helm/logging/fluentbit/values-dev.yaml
+            namespace: logging
+          - name: kibana
+            remoteChart: bitnami/kibana
+            valuesFiles:
+              - ./kubernetes/helm/logging/kibana/values-dev.yaml
+            namespace: logging
+  - name: prod
+    deploy:
+      helm:
+        releases:
+          - name: elasticsearch
+            remoteChart: bitnami/elasticsearch
+            valuesFiles:
+              - ./kubernetes/helm/logging/elasticsearch/values.yaml
+            namespace: logging
+          - name: fluentbit
+            chartPath: ./kubernetes/helm/logging/fluentbit
+            valuesFiles:
+              - ./kubernetes/helm/logging/fluentbit/values.yaml
+            namespace: logging
+          - name: kibana
+            remoteChart: bitnami/kibana
+            valuesFiles:
+              - ./kubernetes/helm/logging/kibana/values.yaml
+            namespace: logging

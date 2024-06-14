@@ -1,0 +1,17 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: AutoscalingDeploy
+profiles:
+  - name: dev
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-autoscaling/*"
+    deploy:
+      kubectl: {}
+  - name: prod
+    manifests:
+      rawYaml:
+        - "./kubernetes/init-autoscaling/*"
+    deploy:
+      kubectl: {}

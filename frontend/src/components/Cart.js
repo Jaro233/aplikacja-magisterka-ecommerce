@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { toast } from "react-toastify";
+import { NotificationContext } from "../context/NotificationContext"; // Import NotificationContext
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -43,12 +44,13 @@ const Cart = () => {
   const classes = useStyles();
   const [cartItems, setCartItems] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
+  const { sendNotification } = useContext(NotificationContext); // Access sendNotification from NotificationContext
   const history = useHistory();
 
   const fetchCartItems = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart`,
+        `${window._env_.REACT_APP_CART_SERVICE_URL}/api/cart`,
         { withCredentials: true }
       );
       setCartItems(response.data.cartItems || []);
@@ -61,10 +63,12 @@ const Cart = () => {
   const handleRemove = async (productId) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart/${productId}`,
+        `${window._env_.REACT_APP_CART_SERVICE_URL}/api/cart/${productId}`,
         { withCredentials: true }
       );
-      toast.success("Product removed from cart");
+      // toast.success("Product removed from cart");
+      // sendNotification("Product removed from cart", "cart"); // Send notification
+
       fetchCartItems();
     } catch (error) {
       toast.error("Error removing product from cart");
@@ -79,7 +83,7 @@ const Cart = () => {
       }
 
       await axios.put(
-        `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart/count`,
+        `${window._env_.REACT_APP_CART_SERVICE_URL}/api/cart/count`,
         { productId, quantity },
         { withCredentials: true }
       );
@@ -89,7 +93,8 @@ const Cart = () => {
           item.id === productId ? { ...item, quantity: Number(quantity) } : item
         )
       );
-      toast.success("Cart updated successfully");
+      // toast.success("Cart updated successfully");
+      // sendNotification("Cart updated successfully", "cart"); // Send notification
     } catch (error) {
       toast.error("Error updating cart");
     }
@@ -102,11 +107,12 @@ const Cart = () => {
         quantity: item.quantity,
       }));
       await axios.post(
-        `${process.env.REACT_APP_ORDER_SERVICE_URL}/api/orders`,
+        `${window._env_.REACT_APP_ORDER_SERVICE_URL}/api/orders`,
         { items: orderItems },
         { withCredentials: true }
       );
-      toast.success("Order placed successfully");
+      // toast.success("Order placed successfully");
+      // sendNotification("Order placed successfully", "cart"); // Send notification
       setCartItems([]);
       history.push("/orders"); // Redirect to orders page
     } catch (error) {

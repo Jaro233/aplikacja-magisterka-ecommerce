@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: product-healthcheck-pre
+spec:
+  metrics:
+    - name: smoke-test
+      count: 3
+      interval: 5s
+      failureLimit: 1
+      provider:
+        job:
+          spec:
+            backoffLimit: 3 # run once
+            template:
+              spec:
+                containers:
+                  - name: smoke-test
+                    image: alpine:3.8
+                    command: [sh, -c]
+                    args:
+                      [
+                        "apk add --no-cache curl && curl -sf http://product-service-stage.e-commerce.svc.cluster.local:5002/health || exit 1",
+                      ]
+                restartPolicy: Never

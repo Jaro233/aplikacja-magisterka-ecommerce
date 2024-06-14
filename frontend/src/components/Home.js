@@ -16,7 +16,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_PRODUCT_SERVICE_URL}/api/products`)
+      .get(`${window._env_.REACT_APP_PRODUCT_SERVICE_URL}/api/products`)
       .then((response) => setProducts(response.data))
       .catch((error) => console.error("Error fetching products:", error));
   }, []);

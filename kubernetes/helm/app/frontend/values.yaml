@@ -1,21 +1,21 @@
-productionSlot: blue
-
 env_vars:
-  REACT_APP_USER_SERVICE_URL_BLUE: user-service-prod.e-commerce.svc.cluster.local:5001
-  REACT_APP_USER_SERVICE_URL_GREEN: user-service-stage.e-commerce.svc.cluster.local:5001
-  REACT_APP_PRODUCT_SERVICE_URL_BLUE: product-service-prod.e-commerce.svc.cluster.local:5002
-  REACT_APP_PRODUCT_SERVICE_URL_GREEN: product-service-stage.e-commerce.svc.cluster.local:5002
-  REACT_APP_ORDER_SERVICE_URL_BLUE: order-service-prod.e-commerce.svc.cluster.local:5003
-  REACT_APP_ORDER_SERVICE_URL_GREEN: order-service-stage.e-commerce.svc.cluster.local:5003
-  REACT_APP_CART_SERVICE_URL_BLUE: cart-service-prod.e-commerce.svc.cluster.local:5004
-  REACT_APP_CART_SERVICE_URL_GREEN: cart-service-stage.e-commerce.svc.cluster.local:5004
+  REACT_APP_USER_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_USER_SERVICE_URL
+  REACT_APP_PRODUCT_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_PRODUCT_SERVICE_URL
+  REACT_APP_ORDER_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_ORDER_SERVICE_URL
+  REACT_APP_CART_SERVICE_URL:
+    name: frontend-configmap
+    key: REACT_APP_CART_SERVICE_URL
 
 microservice:
   name: frontend
   namespace: e-commerce
   replicaCount: 2
-  current_environment_blue: prod
-  current_environment_green: stage
   resources:
     requests:
       memory: "64Mi"
@@ -23,6 +23,7 @@ microservice:
     limits:
       memory: "128Mi"
       cpu: "500m"
+  prePromotionAnalysis: frontend-healthcheck-pre
   livenessProbe:
     enabled: true
     initialDelaySeconds: 5
@@ -31,10 +32,8 @@ microservice:
     enabled: true
     initialDelaySeconds: 15
   image:
-    repository_blue: j4ro123/e-commerce-frontend
-    repository_green: j4ro123/e-commerce-frontend
-    tag_blue: latest
-    tag_green: latest
+    repository: j4ro123/e-commerce-frontend
+    tag: latest
   containerPort: 3000
   service:
     type: ClusterIP

@@ -1,8 +1,7 @@
-productionSlot: blue
-
 env_vars:
-  DB_HOST_BLUE: mysql-prod.prod-db
-  DB_HOST_GREEN: mysql-stage.stage-db
+  DB_HOST:
+    name: product-configmap
+    key: DB_HOST
   DB_USER:
     secret: db-secret
     key: user
@@ -17,8 +16,6 @@ microservice:
   name: product-service
   namespace: e-commerce
   replicaCount: 2
-  current_environment_blue: prod
-  current_environment_green: stage
   resources:
     requests:
       memory: "64Mi"
@@ -26,6 +23,7 @@ microservice:
     limits:
       memory: "128Mi"
       cpu: "500m"
+  prePromotionAnalysis: product-healthcheck-pre
   livenessProbe:
     enabled: true
     initialDelaySeconds: 5
@@ -34,10 +32,8 @@ microservice:
     enabled: true
     initialDelaySeconds: 15
   image:
-    repository_blue: j4ro123/e-commerce-product-service
-    repository_green: j4ro123/e-commerce-product-service
-    tag_blue: latest
-    tag_green: latest
+    repository: j4ro123/e-commerce-product-service
+    tag: latest
   containerPort: 5002
   service:
     type: ClusterIP

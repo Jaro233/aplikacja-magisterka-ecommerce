@@ -9,6 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { useNotifications } from "../context/NotificationContext"; // Import the notification context
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,11 +30,13 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = ({ isLoggedIn, username, cartItemCount, checkAuth }) => {
   const classes = useStyles();
   const history = useHistory();
+  const { sendNotification } = useNotifications(); // Get sendNotification from the context
 
   const handleLogout = () => {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
     checkAuth();
     history.push("/login");
+    sendNotification("You have logged out successfully.", "user");
   };
 
   return (

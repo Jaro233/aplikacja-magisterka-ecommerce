@@ -1,0 +1,55 @@
+env_vars:
+  DB_HOST:
+    name: order-configmap
+    key: DB_HOST
+  DB_USER:
+    secret: db-secret
+    key: user
+  DB_PASS:
+    secret: db-secret
+    key: password
+  DB_NAME:
+    secret: db-secret
+    key: dbName
+  JWT_SECRET:
+    secret: jwt-secret
+    key: secret
+  REDIS_HOST:
+    name: order-configmap
+    key: REDIS_HOST
+  REDIS_PORT:
+    secret: redis-secret
+    key: port
+  REDIS_PASS:
+    secret: redis-secret
+    key: password
+  PRODUCT_SERVICE_URL:
+    name: order-configmap
+    key: PRODUCT_SERVICE_URL
+
+microservice:
+  name: order-service
+  namespace: e-commerce
+  replicaCount: 2
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "200Mi"
+      cpu: "100m"
+  prePromotionAnalysis: order-healthcheck-pre
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+  image:
+    repository: j4ro123/e-commerce-order-service
+    tag: latest
+  containerPort: 5003
+  service:
+    type: ClusterIP
+    port: 5003

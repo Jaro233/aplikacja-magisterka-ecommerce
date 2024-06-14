@@ -1,0 +1,10 @@
+# kind: ConfigMap
+# apiVersion: v1
+# metadata:
+#   name: frontend-configmap
+#   namespace: e-commerce
+# data:
+#   # REACT_APP_USER_SERVICE_URL: http://user-service-prod.e-commerce.svc.cluster.local:5001
+#   # REACT_APP_PRODUCT_SERVICE_URL: http://product-service-prod.e-commerce.svc.cluster.local:5002
+#   # REACT_APP_ORDER_SERVICE_URL: http://order-service-prod.e-commerce.svc.cluster.local:5003
+#   # REACT_APP_CART_SERVICE_URL: http://cart-service-prod.e-commerce.svc.cluster.local:5004

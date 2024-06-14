@@ -1,0 +1,146 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: AppDeploy
+build:
+  tagPolicy:
+    customTemplate:
+      template: "latest"
+  local:
+    push: false
+  artifacts:
+    - image: j4ro123/e-commerce-cart-service
+      context: cart-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-frontend
+      context: frontend
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-order-service
+      context: order-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-product-service
+      context: product-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+    - image: j4ro123/e-commerce-user-service
+      context: user-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "*"
+profiles:
+  - name: dev
+    deploy:
+      helm:
+        releases:
+          - name: mysql-prod
+            chartPath: ./kubernetes/helm/db/mysql
+            valuesFiles:
+              - ./kubernetes/helm/db/mysql/values-dev.yaml
+            namespace: prod-db
+          - name: redis-prod
+            remoteChart: bitnami/redis
+            valuesFiles:
+              - ./kubernetes/helm/db/redis/values-dev.yaml
+            namespace: prod-db
+          - name: argo-rollouts
+            remoteChart: argo/argo-rollouts
+            valuesFiles:
+              - ./kubernetes/helm/argo-rollouts/values-dev.yaml
+            namespace: e-commerce
+          - name: product-service
+            chartPath: ./kubernetes/helm/app/product-service
+            valuesFiles:
+              - ./kubernetes/helm/app/product-service/values-dev.yaml
+            namespace: e-commerce
+          - name: cart-service
+            chartPath: ./kubernetes/helm/app/cart-service
+            valuesFiles:
+              - ./kubernetes/helm/app/cart-service/values-dev.yaml
+            namespace: e-commerce
+          - name: order-service
+            chartPath: ./kubernetes/helm/app/order-service
+            valuesFiles:
+              - ./kubernetes/helm/app/order-service/values-dev.yaml
+            namespace: e-commerce
+          - name: user-service
+            chartPath: ./kubernetes/helm/app/user-service
+            valuesFiles:
+              - ./kubernetes/helm/app/user-service/values-dev.yaml
+            namespace: e-commerce
+          - name: frontend
+            chartPath: ./kubernetes/helm/app/frontend
+            valuesFiles:
+              - ./kubernetes/helm/app/frontend/values-dev.yaml
+            namespace: e-commerce
+    portForward:
+      - resourceType: service
+        resourceName: frontend-prod
+        namespace: e-commerce
+        port: 3000
+        localPort: 3000
+
+  - name: prod
+    deploy:
+      helm:
+        releases:
+          - name: mysql-prod
+            chartPath: ./kubernetes/helm/db/mysql
+            valuesFiles:
+              - ./kubernetes/helm/db/mysql/values.yaml
+            namespace: prod-db
+          - name: redis-prod
+            remoteChart: bitnami/redis
+            valuesFiles:
+              - ./kubernetes/helm/db/redis/values.yaml
+            namespace: prod-db
+          - name: argo-rollouts
+            remoteChart: argo/argo-rollouts
+            valuesFiles:
+              - ./kubernetes/helm/argo-rollouts/values.yaml
+            namespace: e-commerce
+          - name: product-service
+            chartPath: ./kubernetes/helm/app/product-service
+            valuesFiles:
+              - ./kubernetes/helm/app/product-service/values.yaml
+            namespace: e-commerce
+          - name: cart-service
+            chartPath: ./kubernetes/helm/app/cart-service
+            valuesFiles:
+              - ./kubernetes/helm/app/cart-service/values.yaml
+            namespace: e-commerce
+          - name: order-service
+            chartPath: ./kubernetes/helm/app/order-service
+            valuesFiles:
+              - ./kubernetes/helm/app/order-service/values.yaml
+            namespace: e-commerce
+          - name: user-service
+            chartPath: ./kubernetes/helm/app/user-service
+            valuesFiles:
+              - ./kubernetes/helm/app/user-service/values.yaml
+            namespace: e-commerce
+          - name: frontend
+            chartPath: ./kubernetes/helm/app/frontend
+            valuesFiles:
+              - ./kubernetes/helm/app/frontend/values.yaml
+            namespace: e-commerce
+          - name: metrics-server
+            remoteChart: metrics-server/metrics-server
+            valuesFiles:
+              - ./kubernetes/helm/metrics-server/values.yaml

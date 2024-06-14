@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -9,6 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
+import { NotificationContext } from "../context/NotificationContext"; // Import NotificationContext
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -32,15 +33,17 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const { sendNotification } = useContext(NotificationContext);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
-        `${process.env.REACT_APP_USER_SERVICE_URL}/api/users/register`,
+        `${window._env_.REACT_APP_USER_SERVICE_URL}/api/users/register`,
         { username, password, email }
       );
-      toast.success("Registered successfully!");
+      // toast.success("Registered successfully!");
+      // sendNotification("Registered successfully!", "user");
       history.push("/login");
     } catch (error) {
       toast.error("Registration failed. Please try again.");

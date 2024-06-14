@@ -1,0 +1,34 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: MonitoringDeploy
+profiles:
+  - name: dev
+    deploy:
+      helm:
+        releases:
+          - name: prometheus
+            remoteChart: prometheus-community/prometheus
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/prometheus/values.yaml
+            namespace: monitoring
+          - name: grafana
+            remoteChart: grafana/grafana
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/grafana/values-dev.yaml
+            namespace: monitoring
+
+  - name: prod
+    deploy:
+      helm:
+        releases:
+          - name: prometheus
+            remoteChart: prometheus-community/prometheus
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/prometheus/values.yaml
+            namespace: monitoring
+          - name: grafana
+            remoteChart: grafana/grafana
+            valuesFiles:
+              - ./kubernetes/helm/monitoring/grafana/values.yaml
+            namespace: monitoring

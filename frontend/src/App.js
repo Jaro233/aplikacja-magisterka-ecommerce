@@ -17,6 +17,8 @@ import Register from "./components/Register";
 import Cart from "./components/Cart";
 import Orders from "./components/Orders";
 import PrivateRoute from "./components/PrivateRoute";
+import { NotificationProvider } from "./context/NotificationContext";
+import Notification from "./components/Notification";
 import "./App.css";
 
 const App = () => {
@@ -49,8 +51,10 @@ const App = () => {
   const fetchCartItemsCount = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_CART_SERVICE_URL}/api/cart/count`,
-        { withCredentials: true }
+        `${window._env_.REACT_APP_CART_SERVICE_URL}/api/cart/count`,
+        {
+          withCredentials: true,
+        }
       );
       setCartItemCount(response.data.count);
     } catch (error) {
@@ -65,30 +69,37 @@ const App = () => {
   return (
     <Router>
       <div>
-        <Navbar
-          isLoggedIn={isLoggedIn}
-          checkAuth={checkAuth}
-          cartItemCount={cartItemCount}
-          username={username}
-        />
-        <ToastContainer position="top-center" />
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/products/:id" component={ProductDetail} />
-          <Route path="/login">
-            <Login checkAuth={checkAuth} />
-          </Route>
-          <Route path="/register" component={Register} />
-          <PrivateRoute path="/cart" component={Cart} isLoggedIn={isLoggedIn} />
-          <PrivateRoute
-            path="/orders"
-            component={Orders}
+        <NotificationProvider>
+          <Navbar
             isLoggedIn={isLoggedIn}
+            checkAuth={checkAuth}
+            cartItemCount={cartItemCount}
+            username={username}
           />
-          <Route path="*">
-            <Redirect to="/" />
-          </Route>
-        </Switch>
+          {/* <ToastContainer position="top-center" /> */}
+          {/* <Notifications /> */}
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/products/:id" component={ProductDetail} />
+            <Route path="/login">
+              <Login checkAuth={checkAuth} />
+            </Route>
+            <Route path="/register" component={Register} />
+            <PrivateRoute
+              path="/cart"
+              component={Cart}
+              isLoggedIn={isLoggedIn}
+            />
+            <PrivateRoute
+              path="/orders"
+              component={Orders}
+              isLoggedIn={isLoggedIn}
+            />
+            <Route path="*">
+              <Redirect to="/" />
+            </Route>
+          </Switch>
+        </NotificationProvider>
       </div>
     </Router>
   );

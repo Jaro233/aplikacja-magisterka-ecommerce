@@ -16,7 +16,7 @@ const Order = sequelize.define(
   "Order",
   {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(24),
       allowNull: false,
     },
     items: {
